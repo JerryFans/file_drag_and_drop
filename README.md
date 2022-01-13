@@ -2,6 +2,8 @@
 
 A flutter deskstop package that allows you to drag the native file into app support. 
 
+![](https://github.com/JerryFans/file_drag_and_drop/raw/master/preview.mov)
+
 
 # Platform Support
 
