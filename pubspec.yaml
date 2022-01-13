@@ -1,8 +1,6 @@
 name: file_drag_and_drop
 description: A flutter deskstop package that allows you to drag the native file into app support. 
 version: 0.0.1
-author:
-  - JerryFans<fanjiarong_haohao@163.com>
 homepage: https://github.com/JerryFans/file_drag_and_drop
 
 environment:
