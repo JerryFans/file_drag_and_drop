@@ -1,4 +1,4 @@
-# file_drag_and_drop
+# FileDragAndDrop
 
 A flutter deskstop package that allows you to drag the native file into app support. 
 
