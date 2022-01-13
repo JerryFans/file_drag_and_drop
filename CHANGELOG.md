@@ -1,3 +1,7 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+1.0 finish
+
+## 0.0.2
+
+fix some issue, block other not support platform .
