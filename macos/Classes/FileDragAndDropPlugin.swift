@@ -1,6 +1,11 @@
 import Cocoa
 import FlutterMacOS
 
+let kFileDragAndDropEventEntered = "enter"
+let kFileDragAndDropEventExit = "exit"
+let kFileDragAndDropEventPrepareDragTask = "prepare-drag-task"
+let kFileDragAndDropEventPerformDragTask = "perform-dragtask"
+
 public class FileDragAndDropPlugin: NSObject, FlutterPlugin {
     
     private var mainWindow: NSWindow {
@@ -19,7 +24,9 @@ public class FileDragAndDropPlugin: NSObject, FlutterPlugin {
     private var channel: FlutterMethodChannel!
     private var _initialized = false
     private lazy var mainDropView: FlutterDragContainer = {
-        FlutterDragContainer(frame: .zero)
+        let v = FlutterDragContainer(frame: .zero)
+        v.delegate = self
+        return v
     }()
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -56,10 +63,45 @@ public class FileDragAndDropPlugin: NSObject, FlutterPlugin {
         case "initializedMainView":
             _initializedMainView()
             result(true)
-        case "getPlatformVersion":
-            result("macOS " + ProcessInfo.processInfo.operatingSystemVersionString)
         default:
             result(FlutterMethodNotImplemented)
         }
     }
+    
+    public func _invokeMethod(_ eventName: String, arguments: [String:Any]? = nil) {
+        var args: [String:Any] = [:]
+        if let arguments = arguments {
+            args = arguments
+        }
+        args["eventName"] = eventName
+        channel.invokeMethod("onEvent", arguments: args, result: nil)
+    }
+}
+
+extension FileDragAndDropPlugin: FlutterDragContainerDelegate {
+    
+    func draggingFileEntered() {
+        _invokeMethod(kFileDragAndDropEventEntered)
+    }
+    
+    func draggingFileExit() {
+        _invokeMethod(kFileDragAndDropEventExit)
+    }
+    
+    func prepareForDragFileOperation() {
+        _invokeMethod(kFileDragAndDropEventPrepareDragTask)
+    }
+    
+    func performDragFileOperation(_ results: [FileResult]) {
+        var array: [[String:Any]] = []
+        for result in results {
+            var dict: [String:Any] = [:]
+            dict["isDirectory"] = result.isDirectory
+            dict["path"] = result.path
+            dict["fileExtension"] = result.fileExtension
+            array.append(dict)
+        }
+        _invokeMethod(kFileDragAndDropEventPerformDragTask, arguments: ["fileResult":array])
+    }
+    
 }

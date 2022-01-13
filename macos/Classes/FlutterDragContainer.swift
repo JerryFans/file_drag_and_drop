@@ -7,10 +7,13 @@
 
 import Cocoa
 
+typealias FileResult = (path: String, isDirectory: Bool, fileExtension: String)
+
 protocol FlutterDragContainerDelegate {
-    func draggingEntered();
-    func draggingExit();
-    func draggingFileAccept(_ files:Array<FlutterFileInfo>);
+    func draggingFileEntered()
+    func draggingFileExit()
+    func prepareForDragFileOperation()
+    func performDragFileOperation(_ results : [FileResult])
 }
 
 extension NSPasteboard.PasteboardType {
@@ -23,25 +26,12 @@ extension NSPasteboard.PasteboardType {
     } ()
 }
 
-class FlutterFileInfo {
-    var filePath: URL
-    var relativePath: String
-    
-    init(_ filePath: URL, relativePath: String) {
-        self.filePath = filePath
-        self.relativePath = relativePath
-    }
-}
-
 class FlutterDragContainer: NSView {
     
     var delegate : FlutterDragContainerDelegate?
-    
     let acceptTypes = ["png", "jpg", "jpeg"]
     let NSFilenamesPboardType = NSPasteboard.PasteboardType("NSFilenamesPboardType")
     
-    let normalAlpha: CGFloat = 0
-    let highlightAlpha: CGFloat = 0.2
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -56,58 +46,41 @@ class FlutterDragContainer: NSView {
     }
     
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        self.layer?.backgroundColor = NSColor(white: 1, alpha: highlightAlpha).cgColor;
         if let delegate = self.delegate {
-            delegate.draggingEntered();
+            delegate.draggingFileEntered();
         }
         return NSDragOperation.generic
     }
     
     override func draggingExited(_ sender: NSDraggingInfo?) {
-        self.layer?.backgroundColor = NSColor(white: 1, alpha: normalAlpha).cgColor;
         if let delegate = self.delegate {
-            delegate.draggingExit();
+            delegate.draggingFileExit();
         }
     }
     
     override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        self.layer?.backgroundColor = NSColor(white: 1, alpha: normalAlpha).cgColor;
+        if self.delegate != nil {
+            self.delegate?.prepareForDragFileOperation()
+        }
         return true
     }
     
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        var files = Array<FlutterFileInfo>()
+        var files = Array<FileResult>()
         if let board = sender.draggingPasteboard.propertyList(forType: NSFilenamesPboardType) as? NSArray {
             for path in board {
-                files.append(contentsOf: collectFiles(path as! String))
-            }
-        }
-        
-        if self.delegate != nil {
-            self.delegate?.draggingFileAccept(files);
-        }
-        
-        return true
-    }
-    
-    func collectFiles(_ filePath: String) -> Array<FlutterFileInfo> {
-        var files = Array<FlutterFileInfo>()
-        let isDirectory = FlutterFileUtil.isDirectory(filePath)
-        if isDirectory {
-            let fileManager = FileManager.default
-            let enumerator = fileManager.enumerator(atPath: filePath)
-            while let relativePath = enumerator?.nextObject() as? String {
-                let fullFilePath = filePath.appending("/\(relativePath)")
-                if (fileIsAcceptable(fullFilePath)) {
-                    let parent = URL(fileURLWithPath: filePath).lastPathComponent
-                    files.append(FlutterFileInfo(URL(fileURLWithPath: fullFilePath), relativePath:"\(parent)/\(relativePath)"))
+                print(path)
+                if let p = path as? String {
+                    let isDirectory = FlutterFileUtil.isDirectory(p)
+                    let fileExtension = FlutterFileUtil.fileExtension(p)
+                    files.append((path: p,isDirectory: isDirectory, fileExtension: fileExtension))
                 }
             }
-        } else if (fileIsAcceptable(filePath)) {
-            let url = URL(fileURLWithPath: filePath)
-            files.append(FlutterFileInfo(url, relativePath:url.lastPathComponent))
         }
-        return files
+        if self.delegate != nil {
+            self.delegate?.performDragFileOperation(files)
+        }
+        return true
     }
     
     func fileIsAcceptable(_ path: String) -> Bool {
