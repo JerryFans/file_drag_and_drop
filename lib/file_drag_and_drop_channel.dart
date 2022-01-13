@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:file_drag_and_drop/drag_container_listener.dart';
 import 'package:file_drag_and_drop/file_result.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +15,7 @@ const kFileDragAndDropEventPerformDragTask = 'perform-dragtask';
 
 class FileDragAndDropChannel {
   FileDragAndDropChannel._() {
+    if (Platform.isMacOS == false) return;
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -36,7 +38,6 @@ class FileDragAndDropChannel {
       if (call.method != 'onEvent') throw UnimplementedError();
 
       String eventName = call.arguments['eventName'];
-      List fileResult = call.arguments['fileResult'];
       Map<String, Function> funcMap = {
         kFileDragAndDropEventEntered: listener.draggingFileEntered,
         kFileDragAndDropEventExit: listener.draggingFileExit,
@@ -45,6 +46,7 @@ class FileDragAndDropChannel {
         kFileDragAndDropEventPerformDragTask: listener.performDragFileOperation,
       };
       if (eventName == kFileDragAndDropEventPerformDragTask) {
+        List fileResult = call.arguments['fileResult'];
         var resultList = <DragFileResult>[];
         fileResult.forEach((element) { 
           var result = DragFileResult.fromJson(element);
@@ -76,6 +78,7 @@ class FileDragAndDropChannel {
   }
 
   Future<void> initializedMainView() async {
+    if (Platform.isMacOS == false) return;
     await _channel.invokeMethod('initializedMainView');
   }
 }
