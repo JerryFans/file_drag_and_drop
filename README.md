@@ -1,6 +1,6 @@
 <p align="center">
  <a href="https://pub.dev/packages/file_drag_and_drop">
-    <img alt="File Picker" src="https://img.shields.io/pub/v/file_picker.svg">
+    <img alt="FileDragAndDrop" src="https://img.shields.io/pub/v/file_drag_and_drop.svg">
   </a>
  <a href="https://github.com/flutter/flutter">
     <img alt="Language Flutter" src="https://img.shields.io/badge/Language-Flutter-blue.svg?longCache=true&style=flat-square">
