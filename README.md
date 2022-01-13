@@ -7,6 +7,8 @@ A flutter deskstop package that allows you to drag the native file into app supp
 
 # Platform Support
 
+Now only support on macOS, if any one can implements other platform method. Please pull request to contributors
+
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
 |   ➖   |   ✔️   |    ➖    |
