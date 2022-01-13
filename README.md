@@ -1,3 +1,17 @@
+<p align="center">
+ <a href="https://pub.dev/packages/file_drag_and_drop">
+    <img alt="File Picker" src="https://img.shields.io/pub/v/file_picker.svg">
+  </a>
+ <a href="https://github.com/flutter/flutter">
+    <img alt="Language Flutter" src="https://img.shields.io/badge/Language-Flutter-blue.svg?longCache=true&style=flat-square">
+  </a>
+  <a href="https://github.com/JerryFans/file_drag_and_drop"><img src="https://img.shields.io/badge/Platform-macos-blue.svg?longCache=true&style=flat-square">
+  </a>
+  <a href="https://github.com/JerryFans/file_drag_and_drop/issues"><img src="https://img.shields.io/github/issues/JerryFans/file_drag_and_drop">
+  </a>
+  <img src="https://img.shields.io/github/license/JerryFans/file_drag_and_drop">
+</p>
+
 # FileDragAndDrop
 
 A flutter deskstop package that allows you to drag the native file into app support. 
